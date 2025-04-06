@@ -1,26 +1,26 @@
 import streamlit as st
 from utils.model_utils import load_models, detect_cyberbullying, rephrase_text
 
-# Load models
-st.title("🚫 Cyberbullying Detector & 🤖 Rephraser")
-st.write("Detect offensive content and suggest neutral alternatives.")
+# Load models once
+@st.cache_resource
+def initialize_models():
+    return load_models()
 
-with st.spinner("Loading models..."):
-    bert_model, tokenizer, t5_model, t5_tokenizer = load_models()
+bert_model, bert_tokenizer, t5_model, t5_tokenizer = initialize_models()
 
-# Input
-user_input = st.text_area("Enter text to analyze:", height=150)
+# Streamlit UI
+st.title("Cyberbullying Detection & Text Rephrasing")
 
-if st.button("Analyze"):
-    if user_input.strip() == "":
-        st.warning("Please enter some text.")
-    else:
-        label = detect_cyberbullying(user_input, bert_model, tokenizer)
+menu = st.sidebar.selectbox("Choose Task", ["Detect Cyberbullying", "Rephrase Text"])
 
-        if label == 1:
-            st.error("⚠️ Offensive content detected!")
-            rephrased = rephrase_text(user_input, t5_model, t5_tokenizer)
-            st.subheader("Suggested Rephrasing:")
-            st.success(rephrased)
-        else:
-            st.success("✅ No offensive content detected!")
+if menu == "Detect Cyberbullying":
+    text = st.text_area("Enter text to check for cyberbullying:")
+    if st.button("Detect"):
+        result = detect_cyberbullying(text, bert_model, bert_tokenizer)
+        st.success(f"Result: {result}")
+
+elif menu == "Rephrase Text":
+    text = st.text_area("Enter text to rephrase:")
+    if st.button("Rephrase"):
+        result = rephrase_text(text, t5_model, t5_tokenizer)
+        st.success(f"Rephrased: {result}")
