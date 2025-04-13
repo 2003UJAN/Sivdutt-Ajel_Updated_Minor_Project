@@ -3,8 +3,8 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import torch
 
 def load_models():
-    bert_dir = "models/bert"
-    t5_dir = "models/t5"
+    bert_dir = "./models/bert"
+    t5_dir = "./models/t5"
 
     bert_model = BertForSequenceClassification.from_pretrained(bert_dir, local_files_only=True)
     bert_tokenizer = BertTokenizer.from_pretrained(bert_dir, local_files_only=True)
